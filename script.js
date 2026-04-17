@@ -266,3 +266,18 @@ clearCanvas = () => {
     drawRegionLabels();
     updateStats();
 };
+
+function animateClipping() {
+    if (lines.length === 0 || !lines[lines.length-1].clipped) return;
+    
+    const line = lines[lines.length-1];
+    if (!line.clipped.visible) return;
+    
+    let t = 0;
+    const interval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawClipWindow();
+        drawRegionLabels();
+        
+        // Dibujar líneas anteriores
+        lines.slice(0, -1).
