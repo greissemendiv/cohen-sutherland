@@ -242,4 +242,27 @@ clipBtn.addEventListener('click', () => {
     }
 });
 
+function updateStats() {
+    const total = lines.length;
+    const clipped = lines.filter(l => l.clipped && l.clipped.visible).length;
+    const rejected = lines.filter(l => l.clipped && !l.clipped.visible).length;
+    
+    document.getElementById('totalLines').textContent = total;
+    document.getElementById('clippedLines').textContent = clipped;
+    document.getElementById('rejectedLines').textContent = rejected;
+}
 
+// Llamar en clipBtn y clearCanvas
+clipBtn.addEventListener('click', () => {
+    // ... código anterior
+    updateStats();
+});
+
+clearCanvas = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lines = [];
+    startPoint = null;
+    drawClipWindow();
+    drawRegionLabels();
+    updateStats();
+};

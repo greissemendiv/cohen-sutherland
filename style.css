@@ -53,3 +53,20 @@ button:hover {
     background: #5a67d8;
     transform: translateY(-2px);
 }
+
+.stats {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.stats h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+#statsInfo {
+    font-size: 1.1rem;
+    color: #666;
+}
