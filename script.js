@@ -166,3 +166,34 @@ function clipLine(x1, y1, x2, y2) {
     }
     return { x1, y1, x2, y2, visible: false };
 }
+
+let currentLine = null;
+const clipBtn = document.getElementById('clipBtn');
+
+clipBtn.addEventListener('click', () => {
+    if (!startPoint) return;
+    
+    // Buscar la última línea dibujada (simplificado)
+    const clipped = clipLine(startPoint.x, startPoint.y, 
+                           /* usar puntos de debug o lógica más compleja */
+                           400, 300); // Placeholder
+    
+    if (clipped.visible) {
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 4;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(clipped.x1, clipped.y1);
+        ctx.lineTo(clipped.x2, clipped.y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        ctx.fillStyle = '#00ff00';
+        ctx.font = '20px Arial';
+        ctx.fillText('✓ RECORTADA', 10, 120);
+    } else {
+        ctx.fillStyle = '#ff0000';
+        ctx.font = '20px Arial';
+        ctx.fillText('✗ ELIMINADA', 10, 120);
+    }
+});
