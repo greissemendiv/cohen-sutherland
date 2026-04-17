@@ -62,3 +62,62 @@ function drawRegionLabels() {
 }
 
 drawRegionLabels();
+
+function acceptLine(code1, code2) {
+    return code1 === 0 && code2 === 0;
+}
+
+function rejectLine(code1, code2) {
+    return (code1 & code2) !== 0;
+}
+
+function trivialAccept(code1, code2) {
+    return acceptLine(code1, code2);
+}
+
+function trivialReject(code1, code2) {
+    return rejectLine(code1, code2);
+}
+
+// Debug info
+function showDebugInfo(p1, p2) {
+    const code1 = getRegionCode(p1.x, p1.y);
+    const code2 = getRegionCode(p2.x, p2.y);
+    
+    ctx.fillStyle = '#333';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    
+    ctx.fillText(`P1: ${code1.toString(2)}`, 10, 30);
+    ctx.fillText(`P2: ${code2.toString(2)}`, 10, 55);
+    
+    if (trivialAccept(code1, code2)) {
+        ctx.fillStyle = '#00ff00';
+        ctx.fillText('✓ ACEPTADA (trivially)', 10, 80);
+    } else if (trivialReject(code1, code2)) {
+        ctx.fillStyle = '#ff0000';
+        ctx.fillText('✗ RECHAZADA (trivially)', 10, 80);
+    } else {
+        ctx.fillStyle = '#ffaa00';
+        ctx.fillText('⚠️ Necesita recorte', 10, 80);
+    }
+}
+
+// Modificar el event listener del click para mostrar debug
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    if (!startPoint) {
+        startPoint = { x, y };
+        drawPoint(x, y, getRegionCode(x, y));
+    } else {
+        drawPoint(x, y, getRegionCode(x, y));
+        drawLine(startPoint.x, startPoint.y, x, y, '#333');
+        showDebugInfo(startPoint, {x, y});
+        startPoint = null;
+    }
+});
+
