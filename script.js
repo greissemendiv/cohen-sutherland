@@ -170,13 +170,57 @@ function clipLine(x1, y1, x2, y2) {
 let currentLine = null;
 const clipBtn = document.getElementById('clipBtn');
 
-clipBtn.addEventListener('click', () => {
-    if (!startPoint) return;
+let lines = [];
+
+canvas.addEventListener('click', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     
-    // Buscar la última línea dibujada (simplificado)
-    const clipped = clipLine(startPoint.x, startPoint.y, 
-                           /* usar puntos de debug o lógica más compleja */
-                           400, 300); // Placeholder
+    if (!startPoint) {
+        startPoint = { x, y };
+        drawPoint(x, y, getRegionCode(x, y));
+    } else {
+        const endPoint = { x, y };
+        const code1 = getRegionCode(startPoint.x, startPoint.y);
+        const code2 = getRegionCode(endPoint.x, endPoint.y);
+        
+        drawPoint(endPoint.x, endPoint.y, code2);
+        drawLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y, '#333');
+        
+        // Guardar línea original
+        lines.push({
+            original: { ...startPoint, ...endPoint },
+            clipped: null
+        });
+        
+        showDebugInfo(startPoint, endPoint);
+        startPoint = null;
+    }
+});
+
+clipBtn.addEventListener('click', () => {
+    if (lines.length === 0) return;
+    
+    const lastLine = lines[lines.length - 1];
+    const result = clipLine(
+        lastLine.original.x, lastLine.original.y,
+        lastLine.original.x + 300, lastLine.original.y + 200 // Ejemplo
+    );
+    
+    lastLine.clipped = result;
+    
+    if (result.visible) {
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 4;
+        ctx.setLineDash([10, 5]);
+        ctx.beginPath();
+        ctx.moveTo(result.x1, result.y1);
+        ctx.lineTo(result.x2, result.y2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+});
     
     if (clipped.visible) {
         ctx.strokeStyle = '#00ff00';
@@ -197,3 +241,5 @@ clipBtn.addEventListener('click', () => {
         ctx.fillText('✗ ELIMINADA', 10, 120);
     }
 });
+
+
