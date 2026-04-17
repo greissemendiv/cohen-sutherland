@@ -121,3 +121,48 @@ canvas.addEventListener('click', (e) => {
     }
 });
 
+function clipLine(x1, y1, x2, y2) {
+    let code1 = getRegionCode(x1, y1);
+    let code2 = getRegionCode(x2, y2);
+    let accept = false;
+    
+    while (true) {
+        if (trivialAccept(code1, code2)) {
+            accept = true;
+            break;
+        } else if (trivialReject(code1, code2)) {
+            break;
+        }
+        
+        // Elegir punto de salida
+        let x = 0, y = 0;
+        const codeOut = code1 !== 0 ? code1 : code2;
+        
+        if ((codeOut & 8) !== 0) { // Arriba
+            x = x1 + (x2 - x1) * (CLIP_WINDOW.y2 - y1) / (y2 - y1);
+            y = CLIP_WINDOW.y2;
+        } else if ((codeOut & 4) !== 0) { // Abajo
+            x = x1 + (x2 - x1) * (CLIP_WINDOW.y1 - y1) / (y2 - y1);
+            y = CLIP_WINDOW.y1;
+        } else if ((codeOut & 2) !== 0) { // Derecha
+            y = y1 + (y2 - y1) * (CLIP_WINDOW.x2 - x1) / (x2 - x1);
+            x = CLIP_WINDOW.x2;
+        } else if ((codeOut & 1) !== 0) { // Izquierda
+            y = y1 + (y2 - y1) * (CLIP_WINDOW.x1 - x1) / (x2 - x1);
+            x = CLIP_WINDOW.x1;
+        }
+        
+        if (codeOut === code1) {
+            x1 = x; y1 = y;
+            code1 = getRegionCode(x1, y1);
+        } else {
+            x2 = x; y2 = y;
+            code2 = getRegionCode(x2, y2);
+        }
+    }
+    
+    if (accept) {
+        return { x1, y1, x2, y2, visible: true };
+    }
+    return { x1, y1, x2, y2, visible: false };
+}
